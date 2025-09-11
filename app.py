@@ -1,11 +1,13 @@
+# app.py
+
 import streamlit as st
 import requests
 from datetime import datetime
 import random
 from translations import APP_STRINGS
 
-# Base URL of your Flask API
-API_URL = "http://127.0.0.1:5000"
+# La URL de tu API en la nube (deberás cambiar esto)
+API_URL = "http://localhost:5000"  # ¡IMPORTANTE! Reemplaza esto con tu URL pública
 
 # Set wide layout for the app once at the beginning
 st.set_page_config(layout="wide", page_title="NutriGoal")
@@ -196,7 +198,6 @@ def delete_food_log_from_api(log_id, token):
     except requests.exceptions.ConnectionError:
         st.error("Error de conexión al intentar eliminar el alimento.")
 
-
 # Datos para la Dosis Exprés de Sabiduría Nutricional
 NUTRI_WISDOMS = [
     "¿Tu mal humor viene de tu intestino? 🧠El 90% de la serotonina (la hormona del bienestar) se produce en el intestino.",
@@ -264,15 +265,15 @@ def render_home_content():
 
     # Progress Ring and Diversity Metrics
     col_progress_main, col_diversity_main, col_add_button = st.columns([1, 2, 0.5])
-
+    
     with col_progress_main:
         user_goal = get_user_goal_from_api(st.session_state.token)
         vegetable_count = get_user_progress_from_api(st.session_state.token)
-
+        
         # Simulate a progress ring with a large metric
         st.markdown(
             f"<h1 style='text-align: center; font-size: 4em; color: #4CAF50;'>{vegetable_count}</h1>"
-            f"<p style='text-align: center; font-size: 1.5em;'>/{user_goal}</p>",
+            f"<p style='text-align: center; font-size: 1.5em;'>/{user_goal}</p>", 
             unsafe_allow_html=True
         )
         # Progress bar to simulate the ring
@@ -285,6 +286,7 @@ def render_home_content():
                     st.write(f"- {veg}")
             else:
                 st.write(strings['no_food_added'])
+        
 
     with col_diversity_main:
         st.markdown("<h3 style='color: #4CAF50;'>Diversidad Semanal</h3>", unsafe_allow_html=True)
@@ -307,20 +309,20 @@ def render_home_content():
                     st.write(f"- {pro}")
             else:
                 st.write("No has añadido probióticos esta semana.")
-
+    
     # Add food button
     with col_add_button:
         # Initialize session state for expander if it doesn't exist
         if 'add_food_expander' not in st.session_state:
             st.session_state.add_food_expander = False
-
+            
         if st.button("➕", key="add_food_btn", help="Añadir alimento"):
             # Toggle the expander state
             st.session_state.add_food_expander = not st.session_state.add_food_expander
             st.rerun()
-
+            
     st.markdown("---")
-
+    
     # Add food form (now inside an expander)
     # The expander is controlled by the state of the session variable
     with st.expander("Añadir Alimento", expanded=st.session_state.add_food_expander):
@@ -330,17 +332,18 @@ def render_home_content():
 
         food_selection = st.selectbox(strings['select_food'], food_names, key='food_select')
         selected_food_id = food_dict.get(food_selection)
-
-        add_food_col = st.columns([1, 2, 1])[1]  # Centered button
+        
+        add_food_col = st.columns([1,2,1])[1] # Centered button
         with add_food_col:
             if st.button(strings['add_button'], key='add_button_float', use_container_width=True):
                 if selected_food_id:
                     add_food_log(selected_food_id, st.session_state.token)
+        
 
     # Suggestions
     st.markdown(f"<h3 style='text-align: center;'>💡 {strings['suggestions_title']}</h3>", unsafe_allow_html=True)
     suggested_foods = get_suggested_foods_from_api(st.session_state.token)
-
+    
     if suggested_foods:
         # Display up to 3 suggestions
         suggested_foods_limited = suggested_foods[:3]
@@ -350,15 +353,14 @@ def render_home_content():
                 st.button(food['name'], key=f"suggested_food_{food['id']}", use_container_width=True)
     else:
         st.write(f"<p style='text-align: center;'>{strings['congratulations_all_eaten']}</p>", unsafe_allow_html=True)
-
+    
     st.markdown("---")
 
     # Wisdom Tip
-    st.markdown(f"<h3 style='text-align: center;'>Aquí Tienes Tu Dosis Exprés de Sabiduría Nutricional ⚡</h3>",
-                unsafe_allow_html=True)
-    with st.container(border=True):  # Use border for a card-like effect
+    st.markdown(f"<h3 style='text-align: center;'>Aquí Tienes Tu Dosis Exprés de Sabiduría Nutricional ⚡</h3>", unsafe_allow_html=True)
+    with st.container(border=True): # Use border for a card-like effect
         st.markdown(f"**{random.choice(NUTRI_WISDOMS)}**")
-
+        
 
 def render_history_content():
     strings = APP_STRINGS[st.session_state.lang]
@@ -379,7 +381,7 @@ def render_history_content():
             with col_action:
                 if st.button("🗑️", key=f"delete_{log['log_id']}", help=strings['delete_button']):
                     delete_food_log_from_api(log['log_id'], st.session_state.token)
-            st.markdown("---")  # Separator for each log item
+            st.markdown("---") # Separator for each log item
     else:
         st.write(strings['no_food_added'])
 
@@ -420,7 +422,6 @@ def render_profile_content():
         st.session_state.token = None
         st.session_state.page = "login"
         st.rerun()
-
 
 def render_guide_content():
     """Renders the content for the 'Guide' page with the combined text."""
@@ -544,7 +545,6 @@ def render_login_page():
             except requests.exceptions.ConnectionError:
                 st.error(strings['connection_error'])
 
-
 def render_welcome_page():
     strings = APP_STRINGS[st.session_state.lang]
 
@@ -580,7 +580,7 @@ if 'full_name' not in st.session_state:
 if 'lang' not in st.session_state:
     st.session_state.lang = "es"
 if 'page' not in st.session_state:
-    st.session_state.page = "welcome"  # Initial page
+    st.session_state.page = "welcome" # Initial page
 
 if st.session_state.logged_in:
     strings = APP_STRINGS[st.session_state.lang]
