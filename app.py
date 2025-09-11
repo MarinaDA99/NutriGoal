@@ -7,7 +7,7 @@ import random
 from translations import APP_STRINGS
 
 # La URL de tu API en la nube (deberás cambiar esto)
-API_URL = "http://localhost:5000"  # ¡IMPORTANTE! Reemplaza esto con tu URL pública
+API_URL = "https://nutrigoal-api.onrender.com"  # ¡IMPORTANTE! Reemplaza esto con tu URL pública
 
 # Set wide layout for the app once at the beginning
 st.set_page_config(layout="wide", page_title="NutriGoal")
