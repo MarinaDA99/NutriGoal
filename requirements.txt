@@ -3,3 +3,9 @@ requests
 psycopg2-binary
 Flask
 Flask-Bcrypt
+jwt
+wraps
+APP_STRINGS
+requests
+datetime
+random
