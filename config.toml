@@ -5,4 +5,3 @@ secondaryBackgroundColor="#FFFFFF" # Blanco para los contenedores/tarjetas
 textColor="#262730" # Color de texto oscuro
 font="sans serif"
 [server]
-customDomain = "www.nutrigoal.net"
